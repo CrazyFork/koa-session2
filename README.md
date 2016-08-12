@@ -1,3 +1,22 @@
+## Session 创建原理, 流程
+这个库的Session内容是放在内存中的Store对象中的. 而这个Store本质上来说就是一个键值对存储。
+这个库使用的时候有个默认的key是从Cookie中读取Store中的key的值，然后根据这个key的值
+去获取真正的session内容。
+
+这个库的实现, 是在没回读取成功session之后，会在返回的时候再通过uuid重新生成一个session key, 存储
+到客户端的Cookie中。
+
+```javascript
+ctx.session = await opts.store.get(id);
+//....
+
+await next();
+//...
+let sid = await opts.store.set(ctx.session, Object.assign({}, opts, {sid: id}));
+ctx.cookies.set(opts.key, sid, opts);
+```
+
+
 # koa-session2
 
 [![NPM version][npm-image]][npm-url]
